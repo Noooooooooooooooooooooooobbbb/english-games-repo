@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-Star Challenge - B2 Football English</title>
+    <style>
+        /* CSS: Advanced Pitch Theme */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #004d00, #008000); /* Darker, professional pitch gradient */
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 700px;
+            color: #333;
+            border: 8px solid #ff4500; /* Lille/Liverpool colour accent */
+        }
+
+        h1 {
+            color: #008000;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #ccc;
+        }
+
+        .question-card {
+            background-color: #f0f8ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #008000;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        /* General Button Styling for Multiple Choice and True/False */
+        .option-button {
+            width: 100%;
+            background-color: #008000; 
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-button:hover:not(:disabled) {
+            background-color: #006600;
+            transform: translateY(-1px);
+        }
+
+        .option-button:disabled {
+            cursor: default;
+            opacity: 0.8;
+        }
+
+        /* Gap Fill Specifics */
+        .gap-fill-options button {
+            width: auto;
+            margin-right: 10px;
+            padding: 10px 20px;
+        }
+
+        /* Scramble Specifics */
+        .scramble-input {
+            width: calc(100% - 30px);
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+        
+        .scramble-check {
+            margin-top: 15px;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        
+        /* Feedback Styles */
+        .correct {
+            background-color: #28a745 !important; /* Green */
+            animation: pulse-correct 0.4s;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545 !important; /* Red */
+            animation: shake 0.4s;
+            color: white;
+        }
+
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .next-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .next-button:hover {
+            background-color: #cc3700;
+        }
+
+        .match-pairs-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .match-column {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .match-pair-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid #eee;
+            font-size: 1.05em;
+            text-align: center;
+        }
+
+        .match-pair-item:hover:not(.selected) {
+            background-color: #e6ffe6;
+        }
+
+        .match-pair-item.selected {
+            background-color: #ffe6cc;
+            border-color: #ff4500;
+            font-weight: bold;
+        }
+        
+        .match-pair-item.matched {
+            background-color: #28a745 !important;
+            color: white;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>🌟 All-Star Challenge 🌟</h1>
+        <p class="subtitle">Level B2 English for Football Experts</p>
+
+        <div class="score-board">
+            <div>Question: <span id="current-question-number">1</span> / <span id="total-questions">10</span></div>
+            <div>Score: <span id="score">0</span></div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text" id="quiz-question"></div>
+            <div id="options-area">
+                </div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next-button" id="next-button" disabled>Next Question</button>
+    </div>
+
+    <script>
+        // JS: Game Data and Logic
+
+        const questions = [
+            // 1. Multiple Choice (Tactics - B2 Vocabulary)
+            {
+                type: "mcq",
+                topic: "Tactics",
+                question: "What does the B2 tactical phrase 'breaking the lines' primarily refer to?",
+                correct: "A pass that penetrates past a defensive midfield or backline unit.",
+                options: [
+                    "A player scoring a goal from an offside position.",
+                    "The ball crossing the goal line for a goal kick.",
+                    "A defender tackling the ball out of bounds on the sideline."
+                ]
+            },
+            // 2. True or False (Lille FC History)
+            {
+                type: "tf",
+                topic: "Lille OSC History",
+                question: "TRUE or FALSE: Lille OSC's famous nickname, 'Les Dogues' (The Mastiffs), was primarily earned during their 'Machine de Guerre' era in the 1940s and 50s.",
+                correct: "TRUE", // The 'Machine de Guerre' nickname was for the era, but 'Les Dogues' is the most famous general nickname, linking the history. We will treat the historical context as the 'True' part for a more complex question. (Research confirms Les Dogues is the general nickname).
+                incorrect: "FALSE"
+            },
+            // 3. Gap Fill (Verb Tense/Phrasal Verb)
+            {
+                type: "gapfill",
+                topic: "Ligue Un Vocabulary",
+                question: "The striker *[___]* the referee's decision, believing his goal was wrongly disallowed for a marginal offside.",
+                correct: "appealed",
+                options: ["appeals", "appealed", "will appeal", "is appealing"]
+            },
+            // 4. Word Scramble (World Cup History/Vocabulary)
+            {
+                type: "scramble",
+                topic: "World Cup History",
+                question: "Unscramble the B2 word for the person who gives instructions and manages a national team: **TEUOCR**",
+                correct: "COACH",
+                hint: "They select the players and manage tactics."
+            },
+            // 5. Multiple Choice (Liverpool FC History)
+            {
+                type: "mcq",
+                topic: "Liverpool FC History",
+                question: "Which of these famous Liverpool managers is credited with creating 'The Boot Room', the legendary meeting place for coaching staff?",
+                correct: "Bill Shankly",
+                options: [
+                    "Bob Paisley",
+                    "Kenny Dalglish",
+                    "Jürgen Klopp"
+                ]
+            },
+            // 6. True or False (Tactics - B2 Vocabulary)
+            {
+                type: "tf",
+                topic: "Tactics",
+                question: "TRUE or FALSE: The term 'low block' in football tactics means the team applies high-pressure defense near the opponent's goal.",
+                correct: "FALSE",
+                incorrect: "TRUE"
+            },
+            // 7. Gap Fill (Advanced Vocabulary)
+            {
+                type: "gapfill",
+                topic: "Advanced English",
+                question: "The team showed great *[___]* by scoring an equalizer in the 90th minute despite being down to ten players.",
+                correct: "resilience",
+                options: ["resilient", "resilience", "resiliently", "reside"]
+            },
+            // 8. Match the Pair (Tactics/Positions)
+            {
+                type: "match",
+                topic: "Tactics & Positions",
+                question: "Match the position/role with its primary characteristic:",
+                pairs: {
+                    "Anchor Man": "A deep-lying midfielder focused on protection.",
+                    "False Nine": "A striker who drops deep into midfield.",
+                    "Wing-Back": "A defender who runs the length of the pitch."
+                }
+            },
+            // 9. Multiple Choice (World Cup History)
+            {
+                type: "mcq",
+                topic: "World Cup History",
+                question: "Only two teenagers have ever scored a goal in a World Cup Final (1958 and 2018). Which two legends are they?",
+                correct: "Pelé and Kylian Mbappé",
+                options: [
+                    "Ronaldo and Maradona",
+                    "Pelé and Messi",
+                    "Garrincha and Mbappé"
+                ]
+            },
+            // 10. Word Scramble (Ligue Un Vocabulary)
+            {
+                type: "scramble",
+                topic: "Ligue Un Vocabulary",
+                question: "Unscramble the B2 noun describing a player's move from one club to another: **TRENARFS**",
+                correct: "TRANSFER",
+                hint: "A player changing teams."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let totalQuestions = questions.length;
+        let gameActive = true;
+        let selectedMatchPair = null; // Used for the 'match' type question
+
+        const questionNumberElement = document.getElementById('current-question-number');
+        const scoreElement = document.getElementById('score');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const questionTextElement = document.getElementById('quiz-question');
+        const optionsArea = document.getElementById('options-area');
+        const feedbackElement = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+
+        // --- Helper Functions ---
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- Game Flow Functions ---
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= totalQuestions) {
+                endGame();
+                return;
+            }
+
+            gameActive = true;
+            nextButton.disabled = true;
+            feedbackElement.textContent = "";
+            optionsArea.innerHTML = ""; // Clear old content
+            
+            const current = questions[currentQuestionIndex];
+
+            // Update score board
+            questionNumberElement.textContent = currentQuestionIndex + 1;
+            questionTextElement.innerHTML = `[${current.topic}] ${current.question}`;
+
+            // Load content based on question type
+            if (current.type === 'mcq' || current.type === 'tf') {
+                loadMultipleChoice(current);
+            } else if (current.type === 'gapfill') {
+                loadGapFill(current);
+            } else if (current.type === 'scramble') {
+                loadWordScramble(current);
+            } else if (current.type === 'match') {
+                loadMatchPairs(current);
+            }
+        }
+
+        function lockInterface(isCorrect, finalFeedback) {
+            gameActive = false;
+            nextButton.disabled = false;
+            feedbackElement.textContent = finalFeedback;
+            
+            // Disable all buttons in the options area (for MCQ/TF/GapFill)
+            Array.from(optionsArea.querySelectorAll('button')).forEach(button => button.disabled = true);
+            
+            if (document.getElementById('scramble-input')) {
+                document.getElementById('scramble-input').disabled = true;
+                document.getElementById('scramble-check').disabled = true;
+            }
+        }
+
+        function handleCorrectAnswer(correctAnswerText) {
+            score++;
+            scoreElement.textContent = score;
+            const finalFeedback = `✅ Correct! (${correctAnswerText})`;
+            lockInterface(true, finalFeedback);
+        }
+
+        function handleIncorrectAnswer(correctAnswerText) {
+            const finalFeedback = `❌ Incorrect. The correct answer was: ${correctAnswerText}`;
+            lockInterface(false, finalFeedback);
+        }
+
+        // --- Question Type Handlers ---
+
+        function loadMultipleChoice(current) {
+            let allOptions = [current.correct, ...current.options];
+            shuffle(allOptions);
+
+            allOptions.forEach(optionText => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = optionText;
+                button.addEventListener('click', () => {
+                    if (!gameActive) return;
+                    
+                    if (optionText === current.correct) {
+                        button.classList.add('correct');
+                        handleCorrectAnswer(current.correct);
+                    } else {
+                        button.classList.add('incorrect');
+                        // Highlight the correct answer
+                        Array.from(optionsArea.children).forEach(btn => {
+                            if (btn.textContent === current.correct) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                        handleIncorrectAnswer(current.correct);
+                    }
+                });
+                optionsArea.appendChild(button);
+            });
+        }
+        
+        function loadGapFill(current) {
+            // Replace placeholder in question for visual clarity
+            questionTextElement.innerHTML = questionTextElement.textContent.replace('*[___]*', '**[? verb ?]**');
+            
+            optionsArea.classList.add('gap-fill-options'); // Add class for styling
+            let allOptions = [current.correct, ...current.options];
+            shuffle(allOptions);
+
+            allOptions.forEach(optionText => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = optionText;
+                button.addEventListener('click', () => {
+                    if (!gameActive) return;
+
+                    const fullSentence = questionTextElement.textContent.replace('**[? verb ?]**', `**${optionText}**`);
+                    questionTextElement.innerHTML = fullSentence; // Show selected word in sentence
+
+                    if (optionText === current.correct) {
+                        button.classList.add('correct');
+                        handleCorrectAnswer(current.correct);
+                    } else {
+                        button.classList.add('incorrect');
+                        // Highlight the correct button
+                        Array.from(optionsArea.children).forEach(btn => {
+                            if (btn.textContent === current.correct) {
+                                btn.classList.add('correct');
+                            }
+                        });
+                        handleIncorrectAnswer(current.correct);
+                    }
+                });
+                optionsArea.appendChild(button);
+            });
+        }
+        
+        function loadWordScramble(current) {
+            // Display the scrambled word
+            function scrambleWord(word) {
+                let a = word.split("");
+                let n = a.length;
+                for(let i = n - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a.join("");
+            }
+            
+            const scrambled = scrambleWord(current.correct.toUpperCase());
+            
+            const hintText = document.createElement('p');
+            hintText.innerHTML = `**HINT:** ${current.hint}`;
+            optionsArea.appendChild(hintText);
+
+            const scramblePrompt = document.createElement('p');
+            scramblePrompt.innerHTML = `Unscramble this word: <span style="font-size: 1.8em; color: #ff4500;">${scrambled}</span>`;
+            optionsArea.appendChild(scramblePrompt);
+
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = 'scramble-input';
+            input.classList.add('scramble-input');
+            input.placeholder = 'Type your answer here...';
+            optionsArea.appendChild(input);
+
+            const checkButton = document.createElement('button');
+            checkButton.id = 'scramble-check';
+            checkButton.classList.add('scramble-check');
+            checkButton.textContent = 'Check Answer';
+            optionsArea.appendChild(checkButton);
+
+            checkButton.addEventListener('click', () => {
+                if (!gameActive) return;
+                const userAnswer = input.value.trim().toUpperCase();
+                const correctAnswer = current.correct.toUpperCase();
+
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                    handleCorrectAnswer(current.correct.toUpperCase());
+                } else {
+                    input.classList.add('incorrect');
+                    handleIncorrectAnswer(current.correct.toUpperCase());
+                }
+            });
+        }
+
+        function loadMatchPairs(current) {
+            const container = document.createElement('div');
+            container.classList.add('match-pairs-container');
+            
+            const termColumn = document.createElement('div');
+            termColumn.classList.add('match-column');
+            
+            const definitionColumn = document.createElement('div');
+            definitionColumn.classList.add('match-column');
+            
+            const pairs = Object.entries(current.pairs);
+            const terms = pairs.map(([key]) => key);
+            const definitions = pairs.map(([, value]) => value);
+            
+            // Shuffle definitions independently
+            shuffle(definitions);
+
+            let matchedCount = 0;
+            const correctTotal = terms.length;
+            selectedMatchPair = null;
+
+            function checkMatch(termItem, defItem) {
+                const term = termItem.textContent.trim();
+                const definition = defItem.textContent.trim();
+
+                if (current.pairs[term] === definition) {
+                    termItem.classList.add('matched');
+                    defItem.classList.add('matched');
+                    matchedCount++;
+                    
+                    if (matchedCount === correctTotal) {
+                        handleCorrectAnswer("All pairs matched!");
+                    }
+                } else {
+                    // Flash incorrect (optional, for visual feedback)
+                    termItem.classList.add('incorrect');
+                    defItem.classList.add('incorrect');
+                    setTimeout(() => {
+                        termItem.classList.remove('incorrect');
+                        defItem.classList.remove('incorrect');
+                    }, 500);
+                }
+                // Reset selection
+                selectedMatchPair = null;
+                termItem.classList.remove('selected');
+                defItem.classList.remove('selected');
+            }
+
+            // Create Term Items
+            terms.forEach(term => {
+                const item = document.createElement('div');
+                item.classList.add('match-pair-item');
+                item.textContent = term;
+                item.dataset.type = 'term';
+                item.addEventListener('click', () => {
+                    if (item.classList.contains('matched') || !gameActive) return;
+
+                    if (selectedMatchPair && selectedMatchPair.dataset.type === 'definition') {
+                        checkMatch(item, selectedMatchPair);
+                    } else {
+                        // Clear existing selection and set new one
+                        Array.from(termColumn.children).forEach(el => el.classList.remove('selected'));
+                        Array.from(definitionColumn.children).forEach(el => el.classList.remove('selected'));
+                        
+                        item.classList.add('selected');
+                        selectedMatchPair = item;
+                    }
+                });
+                termColumn.appendChild(item);
+            });
+
+            // Create Definition Items
+            definitions.forEach(definition => {
+                const item = document.createElement('div');
+                item.classList.add('match-pair-item');
+                item.textContent = definition;
+                item.dataset.type = 'definition';
+                item.addEventListener('click', () => {
+                    if (item.classList.contains('matched') || !gameActive) return;
+
+                    if (selectedMatchPair && selectedMatchPair.dataset.type === 'term') {
+                        checkMatch(selectedMatchPair, item);
+                    } else {
+                        // Clear existing selection and set new one
+                        Array.from(termColumn.children).forEach(el => el.classList.remove('selected'));
+                        Array.from(definitionColumn.children).forEach(el => el.classList.remove('selected'));
+                        
+                        item.classList.add('selected');
+                        selectedMatchPair = item;
+                    }
+                });
+                definitionColumn.appendChild(item);
+            });
+
+            container.appendChild(termColumn);
+            container.appendChild(definitionColumn);
+            optionsArea.appendChild(container);
+        }
+        
+        // --- Main Game Logic ---
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            optionsArea.classList.remove('gap-fill-options'); // Clean up class
+            loadQuestion();
+        }
+
+        function endGame() {
+            questionTextElement.textContent = "🏆 CHALLENGE COMPLETE! 🏆";
+            optionsArea.innerHTML = "";
+            feedbackElement.innerHTML = `**Final Score:** ${score} out of ${totalQuestions} (${Math.round((score / totalQuestions) * 100)}%). Excellent work!`;
+            nextButton.style.display = 'none'; // Hide the next button
+        }
+
+        // Initialize the game
+        nextButton.addEventListener('click', nextQuestion);
+        totalQuestionsElement.textContent = totalQuestions;
+        loadQuestion();
+    </script>
+
+</body>
+</html>
